@@ -459,7 +459,8 @@ MES DB 2,' Welcome to the Fruit Basket Game !! ',2,13,10
     DB 9,'5. If the player collects a wrong fruit or skips a right one,',13,10
     DB 9,'he will lose a life',13,10
     DB 9,'6.The players goal is to survive for 60 seconds without losing ',13,10
-    DB 9,'all his lives',13,10,13
+    DB 9,'all his lives',13,10
+    DB 9,'7. Press Esc key during playing to return to main menu',13,10,13
     DB 9,9,'Press any key to continue ',2,'$'
 
 
@@ -945,7 +946,7 @@ PUSH DI
         ADD AX, BX
         ;CALCULATED DISTANCE
         ADD DI,BX
-        SUB DI ,10
+        SUB DI ,6
         ;GET ACTUAL DISTANCE IN Z BETWEEN CENTERS ABS(FRUIT_CENTER_X - BASKET_CENTER_X)
         CMP AX, SI
         JL BASKETX_LESS
@@ -1215,42 +1216,52 @@ INTERFACE ENDP
 ;-----------------------------------------------------------------------------------------------------
 ;DRAW YOU WON / LOST INTERFACE
 WON_LOSE_INTERFACE PROC
-;GET SYSTEM TIME
-MOV AH, 2CH
-INT 21H
-MOV PREV_SYS_SEC, DH
-;WAIT FOR TEN SECONDS
-MOV DI, 10
-MOV MES_COLOR, 1
-
-INTER_LOOP:
-    
-    WAIT_SEC:
-    ;GET THE SYSYTEM SECOND AGAIN
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+PUSH DI
+    ;GET SYSTEM TIME
     MOV AH, 2CH
     INT 21H
-    ;CMP WITH THE PREVIOUS SYSTEM TIME
-    CMP DH, PREV_SYS_SEC
-    JE WAIT_SEC
-
-    ;UPDATE THE NEW PREV_SYS_SECOND
     MOV PREV_SYS_SEC, DH
-    ;CHANGE COLOR
-    INC MES_COLOR
-    ;CHECK IF THE PLAYER LOST
-    CMP PLAYER_LOST,1
-    JNE PLR_WON
-        PRINT_MESSAGE LOSE_MES, LOSE_MES_SIZE, 15, 12, MES_COLOR
-        JMP END_INTERFACE
-    ;CHECK IF THE PLAYER WON
-    PLR_WON:
-        PRINT_MESSAGE WON_MES, WON_MES_SIZE, 14, 12, MES_COLOR
-    END_INTERFACE:
-
-    DEC DI
-JNZ INTER_LOOP
-    ;RESET MES_COLOR
+    ;WAIT FOR TEN SECONDS
+    MOV DI, 10
     MOV MES_COLOR, 1
+
+    INTER_LOOP:
+        
+        WAIT_SEC:
+        ;GET THE SYSYTEM SECOND AGAIN
+        MOV AH, 2CH
+        INT 21H
+        ;CMP WITH THE PREVIOUS SYSTEM TIME
+        CMP DH, PREV_SYS_SEC
+        JE WAIT_SEC
+
+        ;UPDATE THE NEW PREV_SYS_SECOND
+        MOV PREV_SYS_SEC, DH
+        ;CHANGE COLOR
+        INC MES_COLOR
+        ;CHECK IF THE PLAYER LOST
+        CMP PLAYER_LOST,1
+        JNE PLR_WON
+            PRINT_MESSAGE LOSE_MES, LOSE_MES_SIZE, 15, 12, MES_COLOR
+            JMP END_INTERFACE
+        ;CHECK IF THE PLAYER WON
+        PLR_WON:
+            PRINT_MESSAGE WON_MES, WON_MES_SIZE, 14, 12, MES_COLOR
+        END_INTERFACE:
+
+        DEC DI
+    JNZ INTER_LOOP
+        ;RESET MES_COLOR
+        MOV MES_COLOR, 1
+POP DI
+POP DX
+POP CX
+POP BX
+POP AX        
 RET
 WON_LOSE_INTERFACE ENDP
 ;-----------------------------------------------------------------------------------------------------
@@ -1581,19 +1592,15 @@ CLEAR_OBJECT ENDP
 PRINT_CHAR PROC
 PUSH AX
 PUSH BX
-    ;TEST MOVING THE CURSOR
-    MOV AH,2
-    MOV BH, 0
-    MOV DL, 20
-    MOV DH, 15
-    INT 10H
-
+  
     MOV AH, 0EH
-    MOV BH, 0FH
+    MOV AL, 07H
+    MOV BH, 0
+    MOV BL, 0FH
     INT 10H
 
 POP BX
-POP CX    
+POP AX    
 RET
 PRINT_CHAR ENDP
 ;-----------------------------------------------------------------------------------------------------
