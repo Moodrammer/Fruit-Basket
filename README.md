@@ -8,3 +8,7 @@ Fruit Basket is a children educational game aiming to test children's understand
 ![alt text](https://github.com/Moodrammer/Fruit-Basket/blob/master/Screen%20shots/Intructions2.png "Instructions ☻")
 ## Game Play
 ![alt text](https://github.com/Moodrammer/Fruit-Basket/blob/master/Screen%20shots/Avocado.png "Game Play ☻")
+
+## Demo
+![alt text](https://github.com/Moodrammer/Fruit-Basket/blob/master/Screen%20shots/demo.gif "Game Play demo")
+
